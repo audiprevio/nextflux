@@ -230,20 +230,20 @@ export default function GenerateImageChat() {
             ) : (
               chats.map((chat, index) => (
                 <div key={index} className="mb-4">
-                  <div className="bg-gray-800 bg-opacity-45 text-gray-100 p-3 rounded-md mb-2 flex flex-col justify-between">
+                  <div className="bg-gray-900 bg-opacity-45 font-medium text-gray-100 p-3 rounded-md mb-2 flex flex-col justify-between">
                     {chat.prompt}
                     <Separator className="my-4 opacity-5" />
                     <div className="flex items-center space-x-4">
                       <button
                         onClick={() => reFirePrompt(chat.prompt, index)}
-                        className="text-blue-400 hover:text-blue-600"
+                        className="text-gray-400 font-light px-2 py-1 text-sm border-gray-600 border-opacity-35 border-[1px] rounded-lg hover:text-gray-500"
                       >
                         Re-fire
                       </button>
 
                       <button
                         onClick={() => deleteChat(index)}
-                        className="text-red-400 hover:text-red-600 ml-4"
+                        className="text-red-500 font-light px-2 py-1 text-sm border-red-600 border-opacity-35 border-[1px] rounded-lg hover:text-red-600 ml-4"
                       >
                         Delete
                       </button>
