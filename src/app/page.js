@@ -194,9 +194,10 @@ export default function GenerateImageChat() {
                 </TooltipTrigger>
                 <TooltipContent className="max-w-60 bg-black text-xgrey border-xgrey border-[1px] border-opacity-25 ease-in-out transition">
                   <p>
-                    Recall lets you combine past prompts for multi-turn
-                    generation, giving the AI short-term memory. Selecting 0
-                    prompts starts a fresh generation with no memory.
+                  Recall lets you combine past prompts with your current
+                    prompt to enhance the AI&apos;s contextual understanding.
+                    Selecting 0 prompts starts a fresh generation without prior
+                    context.
                   </p>
                 </TooltipContent>
               </Tooltip>
