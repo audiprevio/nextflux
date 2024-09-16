@@ -181,10 +181,7 @@ export default function GenerateImageChat() {
             </TooltipProvider>
           </p>
           <p className="mt-2 text-opacity-50 font-normal text-gray-100 mb-6">
-                    When Re-firing a prompt, Recall will apply up to the number
-                    of available previous prompts. If the Recall count is larger
-                    than the number of earlier prompts, it will only use as many
-                    as possible.
+          When Re-firing, Recall only uses as many previous prompts as available if the count is larger than what&apos;s behind the current one.
                   </p>
           <div className="text-gray-100 mb-6">
             <TooltipProvider>
