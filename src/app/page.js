@@ -27,7 +27,9 @@ export default function GenerateImageChat() {
   // Load saved chats from local storage on mount
   useEffect(() => {
     try {
-      const savedChats = JSON.parse(localStorage.getItem("chatHistory") || "[]");
+      const savedChats = JSON.parse(
+        localStorage.getItem("chatHistory") || "[]"
+      );
       setChats(savedChats);
     } catch (error) {
       console.error("Error parsing chat history from local storage:", error);
@@ -60,7 +62,8 @@ export default function GenerateImageChat() {
       const data = await response.json();
 
       if (!response.ok) {
-        let errorMessage = data.error || "An error occurred while generating the image.";
+        let errorMessage =
+          data.error || "An error occurred while generating the image.";
         if (response.status === 403) {
           errorMessage = "Whoops, this machine has run out of cash.";
         }
@@ -102,9 +105,13 @@ export default function GenerateImageChat() {
     setLoading(true);
     setError(null);
 
+    // Calculate the maximum possible Recall count based on the prompt's index
+    const maxRecall = Math.min(recallCount, index);
+
+    // Gather the past prompts based on the new adjusted Recall count
     const pastPrompts =
-      recallCount > 0
-        ? chats.slice(-recallCount).map((chat) => chat.prompt)
+      maxRecall > 0
+        ? chats.slice(index - maxRecall, index).map((chat) => chat.prompt)
         : [];
     const context = pastPrompts.join(" and ");
 
@@ -120,7 +127,8 @@ export default function GenerateImageChat() {
       const data = await response.json();
 
       if (!response.ok) {
-        let errorMessage = data.error || "An error occurred while generating the image.";
+        let errorMessage =
+          data.error || "An error occurred while generating the image.";
         if (response.status === 403) {
           errorMessage = "Whoops, this machine has run out of cash.";
         }
@@ -149,12 +157,13 @@ export default function GenerateImageChat() {
 
   return (
     <div className="bg-black w-screen flex justify-center">
-      <div className="min-h-screen max-w-[1440px] gap-32 h-screen flex flex-col lg:flex-row items-center justify-around py-8 px-4 ">
-        <div className="flex items-start text-start flex-col w-80">
+      <div className="min-h-screen max-w-[1440px] lg:gap-32 flex flex-col xl:flex-row items-center justify-around py-8 px-4">
+        <div className="max-w-3xl flex items-start text-start flex-col xl:max-w-screen xl:w-80">
           <h1 className="text-4xl font-light text-gray-100 mb-6">NextFlux</h1>
-          <p className="text-opacity-50 font-normal text-gray-100 mb-6">
+          <p className="text-opacity-50 font-normal text-gray-100 mb-2">
             A simple, plug-and-play Next.js image generator using Flux.1 Dev via
-            FAL.AI API. NextFlux enables multi-turn image generation by including previous prompts as context through{" "}
+            fal.ai API. NextFlux enables multi-turn image generation by
+            including previous prompts as context through{" "}
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
@@ -162,13 +171,21 @@ export default function GenerateImageChat() {
                 </TooltipTrigger>
                 <TooltipContent className="max-w-60 bg-black text-xgrey border-xgrey border-[1px] border-opacity-25 ease-in-out transition">
                   <p>
-                    Recall lets you combine past prompts with your current prompt to enhance the AI&apos;s contextual understanding. Selecting 0 prompts starts a fresh generation without prior context.
+                    Recall lets you combine past prompts with your current
+                    prompt to enhance the AI&apos;s contextual understanding.
+                    Selecting 0 prompts starts a fresh generation without prior
+                    context.
                   </p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </p>
-          {/* Recall Selector */}
+          <p className="mt-2 text-opacity-50 font-normal text-gray-100 mb-6">
+                    When Re-firing a prompt, Recall will apply up to the number
+                    of available previous prompts. If the Recall count is larger
+                    than the number of earlier prompts, it will only use as many
+                    as possible.
+                  </p>
           <div className="text-gray-100 mb-6">
             <TooltipProvider>
               <Tooltip>
@@ -188,13 +205,13 @@ export default function GenerateImageChat() {
               onValueChange={(value) => setRecallCount(Number(value))}
               value={recallCount.toString()}
             >
-              <SelectTrigger className="w-[180px] bg-gray-900 text-xgrey border-xgrey border-[1px] border-opacity-25 bg-opacity-25 hover:bg-opacity-75 ease-in-out transition">
+              <SelectTrigger className="w-[180px] bg-black text-xgrey border-xgrey border-[1px] border-opacity-25  ease-in-out transition">
                 <SelectValue
                   value={recallCount.toString()}
                   placeholder="Select Recall Count"
                 />
               </SelectTrigger>
-              <SelectContent className="bg-gray-900 text-xgrey border-xgrey border-[1px] border-opacity-25 bg-opacity-25 ease-in-out transition">
+              <SelectContent className="bg-black text-xgrey border-xgrey border-[1px] border-opacity-25 ease-in-out transition">
                 <SelectItem value="0">0 (New Prompt)</SelectItem>
                 <SelectItem value="1">1 Prompt</SelectItem>
                 <SelectItem value="2">2 Prompts</SelectItem>
@@ -205,51 +222,55 @@ export default function GenerateImageChat() {
             </Select>
           </div>
         </div>
-        {/* Chat Display */}
+
         <div className="flex flex-col items-center">
-          <div className="w-full max-w-3xl rounded-lg p-4 overflow-auto mb-6 h-[75vh] border-[0.5px] border-opacity-25 border-xgrey">
-            {chats.map((chat, index) => (
-              <div key={index} className="mb-4">
-                {/* User prompt bubble */}
-                <div className="bg-gray-800 bg-opacity-45 text-gray-100 p-3 rounded-md mb-2 flex flex-col justify-between">
-                  {chat.prompt}
-                  <Separator className="my-4 opacity-5" />
-                  <div className="flex items-center space-x-4">
-                    <button
-                      onClick={() => reFirePrompt(chat.prompt, index)}
-                      className="text-blue-400 hover:text-blue-600"
-                    >
-                      Re-fire
-                    </button>
-
-                    <button
-                      onClick={() => deleteChat(index)}
-                      className="text-red-400 hover:text-red-600 ml-4"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-
-                {/* Generated image bubble */}
-                {chat.result && (
-                  <div className="border border-xgrey border-opacity-15 rounded-lg p-2 flex flex-col">
-                    <Image
-                      src={chat.result}
-                      alt={`Generated Image ${index}`}
-                      width={900}
-                      height={500}
-                      className="rounded-md"
-                    />
-                    <p className="text-sm text-gray-400 mt-2">
-                      Generated Image: {index + 1}
-                    </p>
-                  </div>
-                )}
+          <div className="w-full max-w-3xl lg:min-w-[900px] rounded-lg p-4 overflow-auto mb-6 h-[75vh] border-[0.5px] border-opacity-25 border-xgrey">
+            {chats.length === 0 ? (
+              <div className="text-gray-200 text-center ">
+                No images generated yet.
               </div>
-            ))}
+            ) : (
+              chats.map((chat, index) => (
+                <div key={index} className="mb-4">
+                  <div className="bg-gray-800 bg-opacity-45 text-gray-100 p-3 rounded-md mb-2 flex flex-col justify-between">
+                    {chat.prompt}
+                    <Separator className="my-4 opacity-5" />
+                    <div className="flex items-center space-x-4">
+                      <button
+                        onClick={() => reFirePrompt(chat.prompt, index)}
+                        className="text-blue-400 hover:text-blue-600"
+                      >
+                        Re-fire
+                      </button>
+
+                      <button
+                        onClick={() => deleteChat(index)}
+                        className="text-red-400 hover:text-red-600 ml-4"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+
+                  {chat.result && (
+                    <div className="border border-xgrey border-opacity-15 rounded-lg p-2 flex flex-col">
+                      <Image
+                        src={chat.result}
+                        alt={`Generated Image ${index}`}
+                        width={900}
+                        height={500}
+                        className="rounded-md"
+                      />
+                      <p className="text-sm text-gray-400 mt-2">
+                        Generated Image: {index + 1}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
           </div>
-          {/* Input Form */}
+
           <form
             onSubmit={handleSubmit}
             className="w-full flex flex-row align-middle gap-4 items-center"
