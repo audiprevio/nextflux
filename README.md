@@ -1,5 +1,6 @@
 
-<img width="1440" alt="Screenshot 2024-09-16 at 18 57 10" src="https://github.com/user-attachments/assets/996f8e79-5a1a-4c7b-b864-34f5b9726c2e">
+![A4 - 1](https://github.com/user-attachments/assets/09f96a34-9d37-46cf-be1e-52d5d47f97c3)
+
 
 
 **NextFlux: Image Generation with FAL.AI**
